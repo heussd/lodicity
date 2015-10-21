@@ -26,6 +26,7 @@
 	</build>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<hibernate.version>5.0.2.Final</hibernate.version>
 		<sqlite.version>3.8.11.2</sqlite.version>
 		<groovy.version>2.4.5</groovy.version>
