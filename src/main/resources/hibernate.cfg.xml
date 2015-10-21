@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+
+		<!-- Assume test is the database name -->
+		<property name="hibernate.connection.url">
+			jdbc:sqlite:warehouse.db
+		</property>
+
+		<property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
+		<property name="hibernate.connection.password"></property>
+
+		<property name="hibernate.connection.url">jdbc:sqlite:warehouse.db</property>
+		<!-- <property name="hibernate.connection.url">jdbc:sqlite::memory:; foreign 
+			keys=true;</property> -->
+
+		<property name="hibernate.dialect">org.hibernate.dialect.SQLiteDialect</property>
+
+
+		<!-- This poperty is managed by Java -->
+		<!-- <property name="hibernate.hbm2ddl.auto">create</property> -->
+
+		<!-- SQLite specific settings -->
+		<!-- https://stackoverflow.com/questions/13891006/getting-sqlite-busy-database-file-is-locked-with-select-statements#13891889 -->
+		<property name="hibernate.connection.pool_size">1</property>
+		<property name="hibernate.c3p0.min_size">1</property>
+		<property name="hibernate.c3p0.max_size">1</property>
+		<property name="hibernate.connection.release_mode">on_close</property>
+
+
+
+
+		<property name="default_entity_mode">
+			MAP
+		</property>
+
+		<!-- List of XML mapping files -->
+		<!-- <mapping resource="Employee.hbm.xml" /> -->
+		<!-- <mapping resource="DataObject.hbm.xml" /> -->
+
+	</session-factory>
+</hibernate-configuration>
