@@ -3,6 +3,7 @@ package com.github.heussd.lodicity.store;
 import java.io.Closeable;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.EntityMode;
@@ -42,10 +43,11 @@ public class Warehouse implements Closeable {
 	@SafeVarargs
 	public Warehouse(boolean clear, Class<? extends DataObject>... dataObjectClasses) {
 		LOGGER.debug("T.H. LODicity Warehouse");
+		java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.FINEST);
 		try {
 			Configuration configuration = new Configuration().configure();
 			configuration.setProperty(Environment.DEFAULT_ENTITY_MODE, EntityMode.MAP.toString());
-			// configuration.setProperty(Environment.SHOW_SQL, "true");
+			configuration.setProperty(Environment.SHOW_SQL, "true");
 			configuration.setInterceptor(new DataObjectInterceptor());
 
 			if (clear) {

@@ -458,7 +458,7 @@ public class Schema {
 		id.setAttribute("type", "string");
 		id.setAttribute("column", "HIBERNATEINTERNALID");
 		Element generator = doc.createElement("generator");
-		generator.setAttribute("class", "uuid.hex");
+		generator.setAttribute("class", "org.hibernate.id.UUIDGenerator");
 		id.appendChild(generator);
 		entity.appendChild(id);
 
