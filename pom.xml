@@ -30,6 +30,7 @@
 		<hibernate.version>5.0.2.Final</hibernate.version>
 		<sqlite.version>3.8.11.2</sqlite.version>
 		<groovy.version>2.4.5</groovy.version>
+		<slf4j.version>1.7.12</slf4j.version>
 	</properties>
 
 	<repositories>
@@ -122,6 +123,11 @@
 			<groupId>org.codeartisans</groupId>
 			<artifactId>org.json</artifactId>
 			<version>20150729</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
 </project>
