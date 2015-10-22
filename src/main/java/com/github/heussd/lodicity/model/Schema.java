@@ -465,7 +465,10 @@ public class Schema {
 			Element property = doc.createElement("property");
 			property.setAttribute("name", attribute);
 			property.setAttribute("column", attribute.toUpperCase());
-			property.setAttribute("type", getHibernateType(getDataType(dataObjectClass, attribute)));
+			System.out.println(attribute);
+			String type = getHibernateType(getDataType(dataObjectClass, attribute));
+
+			property.setAttribute("type", type);
 			entity.appendChild(property);
 		}
 
@@ -496,7 +499,10 @@ public class Schema {
 	}
 
 	private static String getHibernateType(String dataType) {
-		assert dataType != null : "dataType is null";
+		// TODO Should be warned or something
+		// assert dataType != null : "dataType is null";
+		if (dataType == null)
+			return "string";
 
 		switch (dataType) {
 		case "Enum":
@@ -508,7 +514,7 @@ public class Schema {
 		case "Integer":
 			return "int";
 		case "Boolean":
-			return "bool";
+			return "boolean";
 		default:
 			// Most likely, we have to handle complex datatypes here.
 
