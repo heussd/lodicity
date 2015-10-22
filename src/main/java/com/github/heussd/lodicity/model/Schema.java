@@ -452,10 +452,11 @@ public class Schema {
 		// <id name="id" column="modelId" length="32" type="string">
 		// <generator class="uuid.hex" />
 		// </id>
+		
 		Element id = doc.createElement("id");
-		id.setAttribute("name", "Id");
+		id.setAttribute("name", "HibernateInternalId");
 		id.setAttribute("type", "string");
-		id.setAttribute("column", "ID");
+		id.setAttribute("column", "HIBERNATEINTERNALID");
 		Element generator = doc.createElement("generator");
 		generator.setAttribute("class", "uuid.hex");
 		id.appendChild(generator);
@@ -465,9 +466,7 @@ public class Schema {
 			Element property = doc.createElement("property");
 			property.setAttribute("name", attribute);
 			property.setAttribute("column", attribute.toUpperCase());
-			System.out.println(attribute);
 			String type = getHibernateType(getDataType(dataObjectClass, attribute));
-
 			property.setAttribute("type", type);
 			entity.appendChild(property);
 		}

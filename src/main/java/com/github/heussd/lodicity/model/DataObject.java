@@ -15,9 +15,11 @@ import org.json.simple.JSONValue;
 @Entity
 public class DataObject extends HashMap<String, Object> {
 
-	private final static List<String> SCHEMA_IGNORED_ATTRIBUTES = Arrays.asList("_class_", "Id");
+	private final static List<String> SCHEMA_IGNORED_ATTRIBUTES = Arrays.asList("_class_", "HibernateInternalId");
 
 	private static final long serialVersionUID = 1L;
+
+	private String hibernateInternalId;
 
 	@Override
 	public Object put(String attribute, Object value) {
@@ -102,12 +104,12 @@ public class DataObject extends HashMap<String, Object> {
 
 	// Needed for Hibernate
 
-	public void setId(String id) {
-		super.put("id", id);
+	public void setHibernateInternalId(String id) {
+		this.hibernateInternalId = id;
 	}
 
 	public String getId() {
-		return generateId("LALA");
+		return hibernateInternalId;
 	}
 
 	// Deprecated?
