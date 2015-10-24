@@ -5,7 +5,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DataObjectIterable implements Iterable<DataObject> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectIterable.class);
 
 	private Class<? extends DataObject> dataObjectClass;
 	int currentIndex = -1;
@@ -22,6 +27,7 @@ public class DataObjectIterable implements Iterable<DataObject> {
 		} catch (Exception e) {
 			throw new RuntimeException(dataObjectClass.getSimpleName() + " must specify a constructor for java.util.Map.class", e);
 		}
+		LOGGER.info("Constructed new Iterator for {} results", list.size());
 	}
 
 	@Override

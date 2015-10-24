@@ -1,17 +1,21 @@
 package com.github.heussd.lodicity.store;
 
 import java.io.Closeable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
+import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,9 +132,27 @@ public class Warehouse implements Closeable {
 		Transaction transaction = session.beginTransaction();
 		session.merge(dataObject);
 		transaction.commit();
-
 	}
 
+	public Iterable<? extends DataObject> query(Class<? extends DataObject> dataObjectClass, Criterion... criterions) {
+		Criteria criteria = session.createCriteria(DataObject.class);
+		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
+
+		LOGGER.info("Firing query with critera {}", criteria.toString());
+		return new DataObjectIterable(dataObjectClass, criteria.list());
+	}
+
+	public Long count(Class<? extends DataObject> dataObjectClass, Criterion... criterions) {
+		Criteria criteria = session.createCriteria(DataObject.class);
+		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
+
+		LOGGER.info("Firing query with critera {}", criteria.toString());
+		return (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
+	}
+
+	public void query(Criteria criteria) {
+
+	}
 	// public DataObjectIterable search(Class<? super DataObject> dataObjectClass, String field, String searchtext) {
 	// FullTextSession fullTextSession = Search.getFullTextSession(session);
 	//

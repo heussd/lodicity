@@ -1,10 +1,12 @@
 package com.github.heussd.lodicity.store;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.criterion.Restrictions;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -100,32 +102,78 @@ public class WarehouseTest {
 
 		int counter = 0;
 		for (DataObject d : warehouse.all(DataObject.class)) {
-			System.out.println("item " + ++counter + ": " + d.<String>get("string"));
+			System.out.println("item " + ++counter + ": " + d.<String> get("string"));
 		}
-		
+
 		System.out.println("Warehouse has " + counter + " items");
 		assertEquals(1, counter);
-		
-//		dataObject.set("string", "Changed value");
-//		warehouse.persist(dataObject);		
-		
+
+		// dataObject.set("string", "Changed value");
+		// warehouse.persist(dataObject);
+
 		warehouse.forEach(DataObject.class, d -> {
 			d.set("string", "Changed value");
 			warehouse.update(d);
 		});
-//		
-		
+		//
+
 		counter = 0;
 		for (DataObject d : warehouse.all(DataObject.class)) {
-			System.out.println("item " + ++counter + ": " + d.<String>get("string"));
+			System.out.println("item " + ++counter + ": " + d.<String> get("string"));
 		}
-	
+
 		System.out.println("Warehouse has " + counter + " items");
 		assertEquals(1, counter);
-		
+
 		warehouse.close();
 	}
-	
+
+	@Test
+	public void testFiltered() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		DataObject dataObject = makeCompanionDataObject();
+
+		DataObject dataObject2 = makeCompanionDataObject();
+		dataObject2.set("string", "hello filter please match me");
+
+		warehouse.persist(dataObject, dataObject2);
+
+		warehouse.query(DataObject.class, Restrictions.eq("string", "please")).forEach(d -> {
+			assertTrue("This should not exact match.", false);
+		});
+
+		warehouse.query(DataObject.class, Restrictions.ilike("string", "%please%"), Restrictions.ilike("string", "%filter%")).forEach(d -> {
+			assertEquals("Expected working ilike did not work", "hello filter please match me", d.<String> get("string"));
+		});
+
+		//
+		// warehouse.stream().filter(u -> u.age > 30 || u.lastName.startsWith("S")).collect(Collectors.toList());
+		warehouse.close();
+	}
+
+	@Test
+	public void testCount() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		DataObject dataObject = makeCompanionDataObject();
+		warehouse.persist(dataObject);
+		assertEquals("Counting for just added DataObject", new Long("1"), warehouse.count(DataObject.class, Restrictions.eq("string", COMPANION_STRING)));
+		warehouse.close();
+	}
+
+	@Test
+	public void testCountedOrQuery() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		DataObject dataObject = makeCompanionDataObject();
+
+		DataObject dataObject2 = makeCompanionDataObject();
+		dataObject2.set("string", "hello filter please match me");
+
+		warehouse.persist(dataObject, dataObject2);
+
+		assertEquals("Counting for just added DataObject", new Long("2"), warehouse.count(DataObject.class,
+				Restrictions.or(Restrictions.eq("string", COMPANION_STRING), Restrictions.eq("string", "hello filter please match me"))));
+		warehouse.close();
+	}
 
 	@Test
 	@Ignore
