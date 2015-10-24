@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.print.attribute.standard.MediaSize.Other;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,8 +31,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.github.heussd.lodicity.store.Warehouse;
 
 /**
  * Offers a number of convenience methods to access the Schema for {@link DataObject} or to validate {@link DataObject} instances.
@@ -40,6 +45,7 @@ import org.w3c.dom.Element;
  */
 public class Schema {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Schema.class);
 	private final static String SCHEMA_NAME = "lodicity.schema.xlsx";
 
 	private final static Schema INSTANCE;
@@ -454,7 +460,7 @@ public class Schema {
 		// </id>
 		
 		Element id = doc.createElement("id");
-		id.setAttribute("name", "HibernateInternalId");
+		id.setAttribute("name", "hibernateInternalId");
 		id.setAttribute("type", "string");
 		id.setAttribute("column", "HIBERNATEINTERNALID");
 		Element generator = doc.createElement("generator");
@@ -480,6 +486,8 @@ public class Schema {
 		Writer out = new StringWriter();
 		tf.transform(new DOMSource(doc), new StreamResult(out));
 
+		
+		LOGGER.info("Produced Hibernate type definition for {} \n{}", dataObjectClass.getSimpleName(), out.toString());
 		return out.toString();
 	}
 

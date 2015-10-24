@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.heussd.lodicity.model.DataObject;
@@ -70,7 +71,7 @@ public class WarehouseTest {
 
 		warehouse.close();
 	}
-	
+
 	@Test
 	public void testEmbeddedType() {
 		Warehouse warehouse = new Warehouse(true, DataObject.class);
@@ -83,9 +84,20 @@ public class WarehouseTest {
 		warehouse.forEach(DataObject.class, d -> {
 			SimpleType s = d.<SimpleType> get("simpleType");
 			assertEquals("SimpleType", s.getClass().getSimpleName());
-			assertEquals("String of a Simple Type", s.<String>get("string"));
+			assertEquals("String of a Simple Type", s.<String> get("string"));
 		});
 
 		warehouse.close();
 	}
+
+	@Test
+	@Ignore
+	public void testFullTextSearch() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		DataObject dataObject = makeCompanionDataObject();
+
+		warehouse.persist(dataObject);
+//		warehouse.search(DataObject.class, "string", "nasty");
+	}
+
 }

@@ -55,13 +55,28 @@ public class Warehouse implements Closeable {
 				configuration.setProperty(Environment.HBM2DDL_AUTO, "create");
 			}
 
-			// For each given DataObject-Class, init a Hibernate mapping.
 			for (Class<? extends DataObject> dataObjectClass : dataObjectClasses) {
 				LOGGER.debug("Registering DataObject Type {}", dataObjectClass.getSimpleName());
+
+				// Make a Hibernate mapping based on Schema information
 				configuration.addInputStream(IOUtils.toInputStream(Schema.generateHibernateMapping(dataObjectClass), "UTF-8"));
 			}
+
+			// <property name="hibernate.search.model_mapping">
+			// com.packtpub.hibernatesearch.util.SearchMappingFactory
+			// </property>
+			// LOGGER.info("Registering {}", DataObjectSearchMappingFactory.class.getCanonicalName());
+			// configuration.setProperty(org.hibernate.search.cfg.Environment.MODEL_MAPPING, DataObjectSearchMappingFactory.class.getCanonicalName());
+
 			factory = configuration.buildSessionFactory();
 			session = factory.openSession();
+
+			// FullTextSession fullTextSession = Search.getFullTextSession(session);
+			// System.out.println(fullTextSession.getSearchFactory().getIndexedTypes().size());
+			// for (Class c : fullTextSession.getSearchFactory().getIndexedTypes()) {
+			// System.out.println(c);
+			// }
+
 		} catch (Throwable e) {
 			throw new RuntimeException("Failed to create Warehouse", e);
 		}
@@ -83,9 +98,8 @@ public class Warehouse implements Closeable {
 		return new DataObjectIterable(dataObjectClass, session.createCriteria(dataObjectClass).list());
 	}
 
-	@SuppressWarnings("unchecked")
 	public void forEach(Class<? extends DataObject> dataObjectClass, Consumer<? super DataObject> consumer) {
-		new DataObjectIterable(dataObjectClass, session.createCriteria(dataObjectClass).list()).forEach(consumer);
+		all(dataObjectClass).forEach(consumer);
 	}
 
 	@Override
@@ -95,7 +109,7 @@ public class Warehouse implements Closeable {
 		session.close();
 	}
 
-	public void persist(List<? extends DataObject> dataObjects) {
+	public void persist(List<? extends DataObject> dataObjects) throws InterruptedException {
 		assert session != null : "Session is null";
 		assert dataObjects.size() != 0 : "No DataObject(s) given";
 
@@ -105,5 +119,39 @@ public class Warehouse implements Closeable {
 		}
 		transaction.commit();
 	}
+
+//	public DataObjectIterable search(Class<? super DataObject> dataObjectClass, String field, String searchtext) {
+//		FullTextSession fullTextSession = Search.getFullTextSession(session);
+//
+//		System.out.println(fullTextSession.getSearchFactory().getIndexedTypes().size());
+//		for (Class c : fullTextSession.getSearchFactory().getIndexedTypes()) {
+//			System.out.println(c);
+//		}
+//
+//		QueryBuilder b = fullTextSession.getSearchFactory().buildQueryBuilder().forEntity(DataObject.class).get();
+//
+//		org.apache.lucene.search.Query luceneQuery = b.keyword().onField(field).boostedTo(3).matching(searchtext).createQuery();
+//
+//		org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
+//		List result = fullTextQuery.list();
+//
+//		for (Object o : fullTextQuery.list()) {
+//			System.out.println(o);
+//		}
+//		return null;
+//
+//		// return a list of managed objects
+//
+//		// SearchFactory searchFactory = fullTextSession.getSearchFactory();
+//		// org.apache.lucene.queryparser.classic.QueryParser parser = new QueryParser("title", searchFactory.getAnalyzer(Myth.class));
+//		// try {
+//		// org.apache.lucene.search.Query luceneQuery = parser.parse("history:storm^3");
+//		// } catch (Exception e) {
+//		// // handle parsing failure
+//		// }
+//		//
+//		// org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
+//		// List result = fullTextQuery.list(); // return a list of managed objects
+//	}
 
 }

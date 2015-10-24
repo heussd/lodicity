@@ -7,19 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Entity;
-
 import org.json.JSONArray;
 import org.json.simple.JSONValue;
 
-@Entity
 public class DataObject extends HashMap<String, Object> {
 
-	private final static List<String> SCHEMA_IGNORED_ATTRIBUTES = Arrays.asList("_class_", "HibernateInternalId");
+	public static final String HIBERNATE_INTERNAL_ID = "hibernateInternalId";
+
+	private final static List<String> SCHEMA_IGNORED_ATTRIBUTES = Arrays.asList("_class_", HIBERNATE_INTERNAL_ID);
 
 	private static final long serialVersionUID = 1L;
 
-	private String hibernateInternalId;
+	public String hibernateInternalId;
 
 	@Override
 	public Object put(String attribute, Object value) {
@@ -77,8 +76,8 @@ public class DataObject extends HashMap<String, Object> {
 			}
 		}
 
-		if (validate && ! SCHEMA_IGNORED_ATTRIBUTES.contains(attribute)) {
-//			System.out.println(attribute + " " + value);
+		if (validate && !SCHEMA_IGNORED_ATTRIBUTES.contains(attribute)) {
+			// System.out.println(attribute + " " + value);
 			assert Schema.isValid(this, attribute, value);
 		}
 
@@ -108,7 +107,7 @@ public class DataObject extends HashMap<String, Object> {
 		this.hibernateInternalId = id;
 	}
 
-	public String getId() {
+	public String getHibernateInternalId() {
 		return hibernateInternalId;
 	}
 

@@ -28,7 +28,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<hibernate.version>5.0.2.Final</hibernate.version>
-		<hibernate-search.version>5.4.0.Final</hibernate-search.version>
+		<hibernate-search.version>5.5.0.Final</hibernate-search.version>
 		<sqlite.version>3.8.11.2</sqlite.version>
 		<slf4j.version>1.7.12</slf4j.version>
 	</properties>
@@ -41,11 +41,11 @@
 	</repositories>
 	<groupId>lodicity</groupId>
 	<dependencies>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-search-orm</artifactId>
-			<version>${hibernate-search.version}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.hibernate</groupId> -->
+<!-- 			<artifactId>hibernate-search-orm</artifactId> -->
+<!-- 			<version>${hibernate-search.version}</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
