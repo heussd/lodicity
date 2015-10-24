@@ -1,8 +1,8 @@
 package com.github.heussd.lodicity.store;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
@@ -50,7 +50,7 @@ public class DataObjectInterceptor extends EmptyInterceptor {
 
 			if (Schema.isListType((DataObject) entity, propertyName)) {
 				Object value = states[i];
-				value = (String) new JSONArray((ArrayList<String>) value).toString();
+				value = (String) new JSONArray((List<String>) value).toString();
 				states[i] = value;
 			}
 		}

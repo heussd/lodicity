@@ -47,7 +47,7 @@ public class Warehouse implements Closeable {
 		try {
 			Configuration configuration = new Configuration().configure();
 			configuration.setProperty(Environment.DEFAULT_ENTITY_MODE, EntityMode.MAP.toString());
-			configuration.setProperty(Environment.SHOW_SQL, "true");
+			configuration.setProperty(Environment.SHOW_SQL, "false");
 			configuration.setInterceptor(new DataObjectInterceptor());
 
 			if (clear) {
@@ -109,49 +109,60 @@ public class Warehouse implements Closeable {
 		session.close();
 	}
 
-	public void persist(List<? extends DataObject> dataObjects) throws InterruptedException {
+	public void persist(List<? extends DataObject> dataObjects) {
 		assert session != null : "Session is null";
 		assert dataObjects.size() != 0 : "No DataObject(s) given";
+		LOGGER.info("Persisting {} items...", dataObjects.size());
 
 		Transaction transaction = session.beginTransaction();
 		for (DataObject dataObject : dataObjects) {
-			session.save(dataObject);
+			session.saveOrUpdate(dataObject);
 		}
 		transaction.commit();
 	}
 
-//	public DataObjectIterable search(Class<? super DataObject> dataObjectClass, String field, String searchtext) {
-//		FullTextSession fullTextSession = Search.getFullTextSession(session);
-//
-//		System.out.println(fullTextSession.getSearchFactory().getIndexedTypes().size());
-//		for (Class c : fullTextSession.getSearchFactory().getIndexedTypes()) {
-//			System.out.println(c);
-//		}
-//
-//		QueryBuilder b = fullTextSession.getSearchFactory().buildQueryBuilder().forEntity(DataObject.class).get();
-//
-//		org.apache.lucene.search.Query luceneQuery = b.keyword().onField(field).boostedTo(3).matching(searchtext).createQuery();
-//
-//		org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
-//		List result = fullTextQuery.list();
-//
-//		for (Object o : fullTextQuery.list()) {
-//			System.out.println(o);
-//		}
-//		return null;
-//
-//		// return a list of managed objects
-//
-//		// SearchFactory searchFactory = fullTextSession.getSearchFactory();
-//		// org.apache.lucene.queryparser.classic.QueryParser parser = new QueryParser("title", searchFactory.getAnalyzer(Myth.class));
-//		// try {
-//		// org.apache.lucene.search.Query luceneQuery = parser.parse("history:storm^3");
-//		// } catch (Exception e) {
-//		// // handle parsing failure
-//		// }
-//		//
-//		// org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
-//		// List result = fullTextQuery.list(); // return a list of managed objects
-//	}
+	public void update(DataObject dataObject) {
+		assert session != null : "Session is null";
+		assert dataObject != null : "No DataObject given";
+
+		Transaction transaction = session.beginTransaction();
+		session.merge(dataObject);
+		transaction.commit();
+
+	}
+
+	// public DataObjectIterable search(Class<? super DataObject> dataObjectClass, String field, String searchtext) {
+	// FullTextSession fullTextSession = Search.getFullTextSession(session);
+	//
+	// System.out.println(fullTextSession.getSearchFactory().getIndexedTypes().size());
+	// for (Class c : fullTextSession.getSearchFactory().getIndexedTypes()) {
+	// System.out.println(c);
+	// }
+	//
+	// QueryBuilder b = fullTextSession.getSearchFactory().buildQueryBuilder().forEntity(DataObject.class).get();
+	//
+	// org.apache.lucene.search.Query luceneQuery = b.keyword().onField(field).boostedTo(3).matching(searchtext).createQuery();
+	//
+	// org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
+	// List result = fullTextQuery.list();
+	//
+	// for (Object o : fullTextQuery.list()) {
+	// System.out.println(o);
+	// }
+	// return null;
+	//
+	// // return a list of managed objects
+	//
+	// // SearchFactory searchFactory = fullTextSession.getSearchFactory();
+	// // org.apache.lucene.queryparser.classic.QueryParser parser = new QueryParser("title", searchFactory.getAnalyzer(Myth.class));
+	// // try {
+	// // org.apache.lucene.search.Query luceneQuery = parser.parse("history:storm^3");
+	// // } catch (Exception e) {
+	// // // handle parsing failure
+	// // }
+	// //
+	// // org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
+	// // List result = fullTextQuery.list(); // return a list of managed objects
+	// }
 
 }

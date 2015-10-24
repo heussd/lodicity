@@ -91,13 +91,50 @@ public class WarehouseTest {
 	}
 
 	@Test
+	public void testObjectManipulation() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+
+		DataObject dataObject = makeCompanionDataObject();
+
+		warehouse.persist(dataObject);
+
+		int counter = 0;
+		for (DataObject d : warehouse.all(DataObject.class)) {
+			System.out.println("item " + ++counter + ": " + d.<String>get("string"));
+		}
+		
+		System.out.println("Warehouse has " + counter + " items");
+		assertEquals(1, counter);
+		
+//		dataObject.set("string", "Changed value");
+//		warehouse.persist(dataObject);		
+		
+		warehouse.forEach(DataObject.class, d -> {
+			d.set("string", "Changed value");
+			warehouse.update(d);
+		});
+//		
+		
+		counter = 0;
+		for (DataObject d : warehouse.all(DataObject.class)) {
+			System.out.println("item " + ++counter + ": " + d.<String>get("string"));
+		}
+	
+		System.out.println("Warehouse has " + counter + " items");
+		assertEquals(1, counter);
+		
+		warehouse.close();
+	}
+	
+
+	@Test
 	@Ignore
 	public void testFullTextSearch() {
 		Warehouse warehouse = new Warehouse(true, DataObject.class);
 		DataObject dataObject = makeCompanionDataObject();
 
 		warehouse.persist(dataObject);
-//		warehouse.search(DataObject.class, "string", "nasty");
+		// warehouse.search(DataObject.class, "string", "nasty");
 	}
 
 }

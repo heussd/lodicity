@@ -70,11 +70,6 @@ public class Schema {
 	 */
 	private Map<String, HashMap<String, HashMap<SchemaProperty, Object>>> schemaModel;
 
-	/**
-	 * This method reads Mediaplatform's schema definition and returns an optimized structure of it.
-	 * 
-	 * @author Timm Heuss
-	 */
 	private Schema(File file) {
 		try {
 			schemaModel = new HashMap<>();
@@ -464,7 +459,7 @@ public class Schema {
 		id.setAttribute("type", "string");
 		id.setAttribute("column", "HIBERNATEINTERNALID");
 		Element generator = doc.createElement("generator");
-		generator.setAttribute("class", "org.hibernate.id.UUIDGenerator");
+		generator.setAttribute("class", "native");
 		id.appendChild(generator);
 		entity.appendChild(id);
 
