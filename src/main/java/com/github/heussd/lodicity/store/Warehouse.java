@@ -135,7 +135,7 @@ public class Warehouse implements Closeable {
 	}
 
 	public Iterable<? extends DataObject> query(Class<? extends DataObject> dataObjectClass, Criterion... criterions) {
-		Criteria criteria = session.createCriteria(DataObject.class);
+		Criteria criteria = session.createCriteria(dataObjectClass);
 		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
 
 		LOGGER.info("Firing query with critera {}", criteria.toString());
@@ -143,7 +143,7 @@ public class Warehouse implements Closeable {
 	}
 
 	public Long count(Class<? extends DataObject> dataObjectClass, Criterion... criterions) {
-		Criteria criteria = session.createCriteria(DataObject.class);
+		Criteria criteria = session.createCriteria(dataObjectClass);
 		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
 
 		LOGGER.info("Firing query with critera {}", criteria.toString());

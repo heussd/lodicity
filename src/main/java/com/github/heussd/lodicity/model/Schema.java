@@ -466,7 +466,7 @@ public class Schema {
 		for (String attribute : getAttributes(dataObjectClass.getSimpleName())) {
 			Element property = doc.createElement("property");
 			property.setAttribute("name", attribute);
-			property.setAttribute("column", attribute.toUpperCase());
+			property.setAttribute("column", attribute);
 			String type = getHibernateType(getDataType(dataObjectClass, attribute));
 			property.setAttribute("type", type);
 			entity.appendChild(property);
