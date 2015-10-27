@@ -74,6 +74,10 @@ public class Warehouse implements Closeable {
 
 			factory = configuration.buildSessionFactory();
 			session = factory.openSession();
+			
+			Transaction transaction = session.beginTransaction();
+			session.createSQLQuery("PRAGMA journal_mode=WAL");
+			transaction.commit();
 
 			// FullTextSession fullTextSession = Search.getFullTextSession(session);
 			// System.out.println(fullTextSession.getSearchFactory().getIndexedTypes().size());
@@ -138,7 +142,7 @@ public class Warehouse implements Closeable {
 		Criteria criteria = session.createCriteria(dataObjectClass);
 		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
 
-		LOGGER.info("Firing query with critera {}", criteria.toString());
+		LOGGER.debug("Firing query with critera {}", criteria.toString());
 		return new DataObjectIterable(dataObjectClass, criteria.list());
 	}
 
@@ -146,7 +150,7 @@ public class Warehouse implements Closeable {
 		Criteria criteria = session.createCriteria(dataObjectClass);
 		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
 
-		LOGGER.info("Firing query with critera {}", criteria.toString());
+		LOGGER.debug("Firing query with critera {}", criteria.toString());
 		return (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 	}
 
