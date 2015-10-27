@@ -28,6 +28,7 @@ public class Warehouse implements Closeable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Warehouse.class);
 	private SessionFactory factory;
 	private Session session;
+	private Transaction transaction;
 
 	public Warehouse() {
 		this(false, DataObject.class);
@@ -154,9 +155,21 @@ public class Warehouse implements Closeable {
 		return (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 	}
 
-	public void query(Criteria criteria) {
-
+	
+	public void openTransaction() {
+		this.transaction = session.beginTransaction();
 	}
+	public void massUpdate(DataObject dataObject) {
+		assert session != null : "Session is null";
+		assert dataObject != null : "No DataObject given";
+		assert this.transaction != null : "No transaction";
+		
+		session.merge(dataObject);
+	}
+	public void commit() {
+		this.transaction.commit();
+	}
+	
 	// public DataObjectIterable search(Class<? super DataObject> dataObjectClass, String field, String searchtext) {
 	// FullTextSession fullTextSession = Search.getFullTextSession(session);
 	//

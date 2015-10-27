@@ -453,7 +453,7 @@ public class Schema {
 		// <id name="id" column="modelId" length="32" type="string">
 		// <generator class="uuid.hex" />
 		// </id>
-		
+
 		Element id = doc.createElement("id");
 		id.setAttribute("name", "hibernateInternalId");
 		id.setAttribute("type", "string");
@@ -467,7 +467,7 @@ public class Schema {
 			Element property = doc.createElement("property");
 			property.setAttribute("name", attribute);
 			property.setAttribute("column", attribute);
-			property.setAttribute("index", "IDX_"+dataObjectClass.getSimpleName()+attribute);
+			property.setAttribute("index", "IDX_" + dataObjectClass.getSimpleName() + "_" + attribute);
 			String type = getHibernateType(getDataType(dataObjectClass, attribute));
 			property.setAttribute("type", type);
 			entity.appendChild(property);
@@ -482,7 +482,6 @@ public class Schema {
 		Writer out = new StringWriter();
 		tf.transform(new DOMSource(doc), new StreamResult(out));
 
-		
 		LOGGER.info("Produced Hibernate type definition for {} \n{}", dataObjectClass.getSimpleName(), out.toString());
 		return out.toString();
 	}
