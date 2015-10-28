@@ -82,7 +82,7 @@ public class Warehouse implements Closeable {
 			Transaction transaction = session.beginTransaction();
 			session.createSQLQuery("PRAGMA journal_mode=WAL");
 
-			this.query = session.createQuery("FROM DataObject dataObject WHERE dataObject.string = :string");
+//			this.query = session.createQuery("FROM DataObject dataObject WHERE dataObject.string = :string");
 			transaction.commit();
 
 			// FullTextSession fullTextSession = Search.getFullTextSession(session);
