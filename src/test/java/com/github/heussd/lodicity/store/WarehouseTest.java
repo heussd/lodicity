@@ -16,7 +16,7 @@ public class WarehouseTest {
 
 	private final static String COMPANION_STRING = "Hello this is a string with nasty characters äöü!";
 
-	private DataObject makeCompanionDataObject() {
+	public final static DataObject makeCompanionDataObject() {
 		DataObject dataObject = new DataObject();
 		dataObject.set("string", COMPANION_STRING);
 		dataObject.set("float", 1F);

@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,6 +17,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ public class Warehouse implements Closeable {
 	private SessionFactory factory;
 	private Session session;
 	private Transaction transaction;
+	private Query query;
 
 	public Warehouse() {
 		this(false, DataObject.class);
@@ -75,9 +78,11 @@ public class Warehouse implements Closeable {
 
 			factory = configuration.buildSessionFactory();
 			session = factory.openSession();
-			
+
 			Transaction transaction = session.beginTransaction();
 			session.createSQLQuery("PRAGMA journal_mode=WAL");
+
+			this.query = session.createQuery("FROM DataObject dataObject WHERE dataObject.string = :string");
 			transaction.commit();
 
 			// FullTextSession fullTextSession = Search.getFullTextSession(session);
@@ -92,14 +97,7 @@ public class Warehouse implements Closeable {
 	}
 
 	public void persist(DataObject... dataObjects) {
-		assert session != null : "Session is null";
-		assert dataObjects != null : "Given DataObject(s) are null";
-
-		Transaction transaction = session.beginTransaction();
-		for (DataObject dataObject : dataObjects) {
-			session.save(dataObject);
-		}
-		transaction.commit();
+		persist(Arrays.asList(dataObjects));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,10 +121,22 @@ public class Warehouse implements Closeable {
 		assert dataObjects.size() != 0 : "No DataObject(s) given";
 		LOGGER.info("Persisting {} items...", dataObjects.size());
 
+		// session.get(DataObject.class, );
+		// // has?
+		// {long start = System.nanoTime();
+		// count(DataObject.class, Restrictions.eq("string", dataObjects.get(0).<String>get("string")));
+		// long end = System.nanoTime();
+		// System.out.println("Counting took " + (end-start));
+		// }
+
+		long start = System.nanoTime();
 		Transaction transaction = session.beginTransaction();
 		for (DataObject dataObject : dataObjects) {
+
 			session.saveOrUpdate(dataObject);
 		}
+		long end = System.nanoTime();
+		System.out.println(end - start);
 		transaction.commit();
 	}
 
@@ -155,21 +165,22 @@ public class Warehouse implements Closeable {
 		return (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 	}
 
-	
 	public void openTransaction() {
 		this.transaction = session.beginTransaction();
 	}
+
 	public void massUpdate(DataObject dataObject) {
 		assert session != null : "Session is null";
 		assert dataObject != null : "No DataObject given";
 		assert this.transaction != null : "No transaction";
-		
+
 		session.merge(dataObject);
 	}
+
 	public void commit() {
 		this.transaction.commit();
 	}
-	
+
 	// public DataObjectIterable search(Class<? super DataObject> dataObjectClass, String field, String searchtext) {
 	// FullTextSession fullTextSession = Search.getFullTextSession(session);
 	//
