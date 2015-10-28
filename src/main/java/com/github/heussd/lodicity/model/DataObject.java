@@ -28,6 +28,15 @@ public class DataObject extends HashMap<String, Object> {
 	public Object put(String attribute, Object value, boolean validate) {
 		Object previousValue = super.get(attribute);
 
+		if (previousValue != null && previousValue instanceof List) {
+			if (!(value instanceof List)) {
+				// Comfort feature: You are setting a scalar value where lists are expected. Add it on the fly.
+				Object v = value;			
+				value = this.<ArrayList<Object>>get(attribute);
+				((List<String>) value).add((String) v);
+			}
+		}
+
 		if (!SCHEMA_IGNORED_ATTRIBUTES.contains(attribute)) {
 			if (validate)
 				assert Schema.isValid(this, attribute, value);

@@ -55,6 +55,23 @@ public class SchemaTest {
 	
 	
 	@Test
+	public void testPutMultiple() {
+		DataObject dataObject = makeCompanionDataObject();
+		
+		ArrayList<String> list = dataObject.<ArrayList<String>>get("stringList");
+		assertEquals("Hello", list.get(0));
+		assertEquals("World", list.get(1));
+		
+		dataObject.put("stringList", "from Java");
+		
+		list = dataObject.<ArrayList<String>>get("stringList");
+		assertEquals("Hello", list.get(0));
+		assertEquals("World", list.get(1));
+		assertEquals("from Java", list.get(2));
+	}
+	
+	
+	@Test
 	public void testEmbeddedSimpleType() {
 		
 	}
