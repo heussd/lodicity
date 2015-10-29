@@ -45,25 +45,29 @@ public class DataObjectInterceptor extends EmptyInterceptor {
 	}
 
 	private Object[] embedListsAsJson(Object entity, Object[] states, String[] propertyNames, Type[] types) {
-		for (int i = 0; i < propertyNames.length; i++) {
-			String propertyName = propertyNames[i];
+		if (entity instanceof DataObject) {
+			for (int i = 0; i < propertyNames.length; i++) {
+				String propertyName = propertyNames[i];
 
-			if (Schema.isListType((DataObject) entity, propertyName)) {
-				Object value = states[i];
-				value = (String) new JSONArray((List<String>) value).toString();
-				states[i] = value;
+				if (Schema.isListType((DataObject) entity, propertyName)) {
+					Object value = states[i];
+					value = (String) new JSONArray((List<String>) value).toString();
+					states[i] = value;
+				}
 			}
 		}
 		return states;
 	}
 
 	private Object[] embedDataObjectsAsJson(Object entity, Object[] states, String[] propertyNames, Type[] types) {
-		for (int i = 0; i < propertyNames.length; i++) {
-			Object value = states[i];
+		if (entity instanceof DataObject) {
+			for (int i = 0; i < propertyNames.length; i++) {
+				Object value = states[i];
 
-			if (value != null && value instanceof DataObject) {
-				value = (String) ((DataObject) value).toJson();
-				states[i] = value;
+				if (value != null && value instanceof DataObject) {
+					value = (String) ((DataObject) value).toJson();
+					states[i] = value;
+				}
 			}
 		}
 		return states;

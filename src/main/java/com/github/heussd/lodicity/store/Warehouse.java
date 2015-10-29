@@ -20,6 +20,7 @@ import org.hibernate.criterion.Projections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.heussd.lodicity.data.MetaData;
 import com.github.heussd.lodicity.model.DataObject;
 import com.github.heussd.lodicity.model.DataObjectIterable;
 import com.github.heussd.lodicity.model.Schema;
@@ -195,7 +196,24 @@ public class Warehouse implements Closeable {
 	}
 
 	public void commit() {
-		this.transaction.commit();
+		if (this.transaction != null)
+			this.transaction.commit();
+	}
+
+	public MetaData getMetaData(String identifer) {
+		List<MetaData> list = session.createQuery("FROM MetaData metaData WHERE metaData.dataSourceIdentifier= :identifier")
+				.setParameter("identifier", identifer).list();
+		if (list.size() > 0) {
+			return list.get(0);
+		} else {
+			return new MetaData(identifer);
+		}
+	}
+
+	public void persistMetaData(MetaData metaData) {
+		Transaction t = session.beginTransaction();
+		session.saveOrUpdate(metaData);
+		t.commit();
 	}
 
 }

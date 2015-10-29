@@ -31,11 +31,6 @@
 		<property name="hibernate.search.default.indexBase">./indexes</property>
 		<!-- <property name="hibernate.search.rebuildIndex">true</property> -->
 
-
-		<!-- <mapping class="com.github.heussd.lodicity.model.DataObject" /> -->
-
-
-
 		<!-- SQLite specific settings -->
 		<!-- https://stackoverflow.com/questions/13891006/getting-sqlite-busy-database-file-is-locked-with-select-statements#13891889 -->
 		<property name="hibernate.connection.pool_size">1</property>
@@ -43,5 +38,9 @@
 		<property name="hibernate.c3p0.max_size">1</property>
 		<property name="hibernate.connection.release_mode">on_close</property>
 
+
+		<mapping class="com.github.heussd.lodicity.data.MetaData" />
 	</session-factory>
+
+
 </hibernate-configuration>
