@@ -50,16 +50,23 @@ public class LoadManager {
 			LOGGER.info("Load chain {}", loaders);
 
 			boolean loadRequired = false;
-			for (DataSource dataSource : dataSources) {
-				LOGGER.info("DataSource {}, last successful load {}", dataSource, "NEVER");
-				String currentToken = dataSource.getCurrentnessToken();
-				String storedToken = warehouse.getMetaData(dataSource.getIdentifer()).currentnessToken;
-				LOGGER.debug("Currentness token is {}, stored one is {}", currentToken, storedToken);
 
-				// TODO:
-				if (!currentToken.equals(storedToken)) {
-					loadRequired = true;
+			if (dataSources.size() != 0) {
+				for (DataSource dataSource : dataSources) {
+					MetaData metaData = warehouse.getMetaData(dataSource.getIdentifer());
+
+					LOGGER.info("DataSource {}, last successful load {}", dataSource, metaData.lastSuccessData);
+					String currentToken = dataSource.getCurrentnessToken();
+					String storedToken = metaData.currentnessToken;
+					LOGGER.debug("Currentness token is {}, stored one is {}", currentToken, storedToken);
+
+					if (!currentToken.equals(storedToken)) {
+						loadRequired = true;
+					}
 				}
+			} else {
+				LOGGER.warn("No datasources specified, asserting full load is required");
+				loadRequired = true;
 			}
 
 			LOGGER.info("Load of this chain is {}required", (loadRequired ? "" : "not "));
