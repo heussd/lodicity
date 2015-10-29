@@ -138,11 +138,15 @@ public class WarehouseTest {
 
 		warehouse.persist(dataObject, dataObject2);
 
-		warehouse.query(DataObject.class, Restrictions.eq("string", "please")).forEach(d -> {
+		Filter filter = new Filter(DataObject.class);
+
+		warehouse.query(filter.eq("string", "please")).forEach(d -> {
 			assertTrue("This should not exact match.", false);
 		});
 
-		warehouse.query(DataObject.class, Restrictions.ilike("string", "%please%"), Restrictions.ilike("string", "%filter%")).forEach(d -> {
+		filter = new Filter(DataObject.class);
+
+		warehouse.query(filter.ilike("string", "please"), filter.ilike("string", "filter")).forEach(d -> {
 			assertEquals("Expected working ilike did not work", "hello filter please match me", d.<String> get("string"));
 		});
 
@@ -156,7 +160,9 @@ public class WarehouseTest {
 		Warehouse warehouse = new Warehouse(true, DataObject.class);
 		DataObject dataObject = makeCompanionDataObject();
 		warehouse.persist(dataObject);
-		assertEquals("Counting for just added DataObject", new Long("1"), warehouse.count(DataObject.class, Restrictions.eq("string", COMPANION_STRING)));
+
+		Filter filter = new Filter(DataObject.class);
+		assertEquals("Counting for just added DataObject", new Long("1"), warehouse.count(filter.eq("string", COMPANION_STRING)));
 		warehouse.close();
 	}
 
@@ -170,19 +176,11 @@ public class WarehouseTest {
 
 		warehouse.persist(dataObject, dataObject2);
 
-		assertEquals("Counting for just added DataObject", new Long("2"), warehouse.count(DataObject.class,
-				Restrictions.or(Restrictions.eq("string", COMPANION_STRING), Restrictions.eq("string", "hello filter please match me"))));
+		Filter filter = new Filter(DataObject.class);
+
+		assertEquals("Counting for just added DataObject", new Long("2"),
+				warehouse.count(filter.or(filter.eq("string", COMPANION_STRING), filter.eq("string", "hello filter please match me"))));
 		warehouse.close();
-	}
-
-	@Test
-	@Ignore
-	public void testFullTextSearch() {
-		Warehouse warehouse = new Warehouse(true, DataObject.class);
-		DataObject dataObject = makeCompanionDataObject();
-
-		warehouse.persist(dataObject);
-		// warehouse.search(DataObject.class, "string", "nasty");
 	}
 
 }

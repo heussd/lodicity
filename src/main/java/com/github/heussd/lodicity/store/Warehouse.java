@@ -17,7 +17,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +81,7 @@ public class Warehouse implements Closeable {
 			Transaction transaction = session.beginTransaction();
 			session.createSQLQuery("PRAGMA journal_mode=WAL");
 
-//			this.query = session.createQuery("FROM DataObject dataObject WHERE dataObject.string = :string");
+			// this.query = session.createQuery("FROM DataObject dataObject WHERE dataObject.string = :string");
 			transaction.commit();
 
 			// FullTextSession fullTextSession = Search.getFullTextSession(session);
@@ -136,7 +135,7 @@ public class Warehouse implements Closeable {
 			session.saveOrUpdate(dataObject);
 		}
 		long end = System.nanoTime();
-		System.out.println(end - start);
+		LOGGER.info("Persisted items in {} milliseconds", (end - start) / 100000);
 		transaction.commit();
 	}
 
@@ -149,20 +148,38 @@ public class Warehouse implements Closeable {
 		transaction.commit();
 	}
 
-	public Iterable<? extends DataObject> query(Class<? extends DataObject> dataObjectClass, Criterion... criterions) {
-		Criteria criteria = session.createCriteria(dataObjectClass);
-		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
-
-		LOGGER.debug("Firing query with critera {}", criteria.toString());
-		return new DataObjectIterable(dataObjectClass, criteria.list());
+	public Iterable<? extends DataObject> query(Class<? extends DataObject> dataObjectClass) {
+		return query(new Filter(dataObjectClass));
 	}
 
-	public Long count(Class<? extends DataObject> dataObjectClass, Criterion... criterions) {
-		Criteria criteria = session.createCriteria(dataObjectClass);
-		Arrays.asList(criterions).forEach(criterion -> criteria.add(criterion));
+	public Iterable<? extends DataObject> query(Filter... filters) {
+		assert filters.length > 0 : "At least one filter is required";
+		Criteria criteria = criteriaFromFilters(filters);
+
+		LOGGER.debug("Firing query with critera {}", criteria.toString());
+		return new DataObjectIterable(filters[0].getDataObjectClass(), criteria.list());
+	}
+
+	public Long count(Class<? extends DataObject> dataObjectClass) {
+		return count(new Filter(dataObjectClass));
+	}
+
+	public Long count(Filter... filters) {
+		assert filters.length > 0 : "At least one filter is required";
+		Criteria criteria = criteriaFromFilters(filters);
 
 		LOGGER.debug("Firing query with critera {}", criteria.toString());
 		return (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
+	}
+
+	private Criteria criteriaFromFilters(Filter[] filters) {
+		Criteria criteria = session.createCriteria(filters[0].getDataObjectClass());
+		Arrays.asList(filters).forEach(filter -> {
+			Criterion criterion = filter.getCriterion();
+			if (criterion != null)
+				criteria.add(criterion);
+		});
+		return criteria;
 	}
 
 	public void openTransaction() {
@@ -180,39 +197,5 @@ public class Warehouse implements Closeable {
 	public void commit() {
 		this.transaction.commit();
 	}
-
-	// public DataObjectIterable search(Class<? super DataObject> dataObjectClass, String field, String searchtext) {
-	// FullTextSession fullTextSession = Search.getFullTextSession(session);
-	//
-	// System.out.println(fullTextSession.getSearchFactory().getIndexedTypes().size());
-	// for (Class c : fullTextSession.getSearchFactory().getIndexedTypes()) {
-	// System.out.println(c);
-	// }
-	//
-	// QueryBuilder b = fullTextSession.getSearchFactory().buildQueryBuilder().forEntity(DataObject.class).get();
-	//
-	// org.apache.lucene.search.Query luceneQuery = b.keyword().onField(field).boostedTo(3).matching(searchtext).createQuery();
-	//
-	// org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
-	// List result = fullTextQuery.list();
-	//
-	// for (Object o : fullTextQuery.list()) {
-	// System.out.println(o);
-	// }
-	// return null;
-	//
-	// // return a list of managed objects
-	//
-	// // SearchFactory searchFactory = fullTextSession.getSearchFactory();
-	// // org.apache.lucene.queryparser.classic.QueryParser parser = new QueryParser("title", searchFactory.getAnalyzer(Myth.class));
-	// // try {
-	// // org.apache.lucene.search.Query luceneQuery = parser.parse("history:storm^3");
-	// // } catch (Exception e) {
-	// // // handle parsing failure
-	// // }
-	// //
-	// // org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
-	// // List result = fullTextQuery.list(); // return a list of managed objects
-	// }
 
 }
