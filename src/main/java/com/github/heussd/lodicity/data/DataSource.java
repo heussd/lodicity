@@ -19,4 +19,9 @@ public abstract class DataSource {
 	public abstract String getIdentifer();
 
 	public abstract List<File> getLocalFiles();
+	
+	
+	public String toString() {
+		return this.getClass().getSimpleName();
+	}
 }
