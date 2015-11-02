@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
-import org.json.simple.JSONValue;
+import org.json.JSONObject;
 
 public class DataObject extends HashMap<String, Object> {
 
@@ -103,7 +103,7 @@ public class DataObject extends HashMap<String, Object> {
 	}
 
 	public String toJson() {
-		return JSONValue.toJSONString(this);
+		return JSONObject.valueToString(this);
 	}
 
 	public DataObject(Map<String, Object> map) {
