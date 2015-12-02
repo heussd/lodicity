@@ -25,6 +25,14 @@
 				</configuration>
 			</plugin>
 			<plugin>
+			    <groupId>org.eluder.coveralls</groupId>
+			    <artifactId>coveralls-maven-plugin</artifactId>
+			    <version>4.1.0</version>
+			    <configuration>
+			        <repoToken>yourcoverallsprojectrepositorytoken</repoToken>
+			    </configuration>
+			</plugin>
+			<plugin>
 				<!-- http://www.summa-tech.com/blog/2011/04/12/a-visual-maven-dependency-tree-view -->
 				<!-- mvn dependency:tree -DoutputType=graphml -DoutputFile=dependency.graphml -->
 				<groupId>org.apache.maven.plugins</groupId>
@@ -114,4 +122,15 @@
 			<version>1.2.15</version>
 		</dependency>
 	</dependencies>
+
+	<!-- mvn surefire-report:report -->
+	<reporting>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-report-plugin</artifactId>
+			<version>2.19</version>
+		</plugin>
+	</plugins>
+</reporting>
 </project>
