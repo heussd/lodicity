@@ -28,9 +28,6 @@
 			    <groupId>org.eluder.coveralls</groupId>
 			    <artifactId>coveralls-maven-plugin</artifactId>
 			    <version>4.1.0</version>
-			    <configuration>
-			        <repoToken>yourcoverallsprojectrepositorytoken</repoToken>
-			    </configuration>
 			</plugin>
 			<plugin>
 				<!-- http://www.summa-tech.com/blog/2011/04/12/a-visual-maven-dependency-tree-view -->
