@@ -3,6 +3,7 @@ package com.github.heussd.lodicity.model;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -35,6 +36,12 @@ public class SchemaTest {
 	public void testTypeSupport() {
 		DataObject dataObject = new DataObject();
 		assertEquals("String", Schema.getDataType(dataObject, "string"));
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testInvalidTypeSupport() {
+		DataObject dataObject = new DataObject();
+		Schema.getDataType(dataObject, "This does not exist");
 	}
 
 	@Test
@@ -86,8 +93,47 @@ public class SchemaTest {
 
 	@Test
 	public void testAttributeAccess() {
-		for (String attribute : Schema.getAttributes(new DataObject())) {
+		for (String attribute : Schema.getAttributes(new DataObject(), "")) {
 			System.out.println(attribute + " is " + (Schema.isTrivialType(attribute) ? "trivial" : "non-trivial"));
 		}
+	}
+
+	@Test
+	public void testDeserialse() {
+		HashMap hashmap = new HashMap<>();
+		JSONArray jsonArray = new JSONArray();
+		jsonArray.put("one");
+		jsonArray.put("two");
+		hashmap.put("stringList", jsonArray.toString());
+
+		new DataObject(hashmap).get("stringList");
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testInvalidAttribute() {
+		Schema.getDataType(DataObject.class, "totally random attribute that does not exist");
+	}
+
+	@Test
+	public void testIsAlwaysValid() {
+		Schema.isValid(makeCompanionDataObject(), "_class_", "DataObject");
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testIsAlwaysInValid() {
+		Schema.isValid(makeCompanionDataObject(), "_class_", "Not an class attribute");
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testCannotCast() {
+		Schema.isValid(makeCompanionDataObject(), "boolean", "totally not a boolean value");
+	}
+
+	@Test
+	public void testMandatory() {
+		class StrictType extends DataObject {
+
+		}
+		Schema.isValid(new StrictType(), "musthavestring", null);
 	}
 }

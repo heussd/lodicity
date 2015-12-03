@@ -388,15 +388,9 @@ public class Schema {
 	public static void validate(DataObject dataObject) {
 		assert dataObject != null : "Cannot validate a null object";
 
-		try {
-			for (String attribute : getAttributes(dataObject)) {
-				// Make a validated get
-				dataObject.get(attribute);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Schema validation failed for DataObject of type \"" + dataObject.getClass().getSimpleName() + "\". Invalid DataObject is " + dataObject,
-					e);
+		for (String attribute : getAttributes(dataObject)) {
+			// Make a validated get
+			dataObject.get(attribute);
 		}
 	}
 
@@ -464,7 +458,7 @@ public class Schema {
 			Element property = doc.createElement("property");
 			property.setAttribute("name", attribute);
 			property.setAttribute("column", attribute);
-//			property.setAttribute("index", "IDX_" + dataObjectClass.getSimpleName().toUpperCase() + "_SHARED, IDX_" + dataObjectClass.getSimpleName() + "_" + attribute);
+			// property.setAttribute("index", "IDX_" + dataObjectClass.getSimpleName().toUpperCase() + "_SHARED, IDX_" + dataObjectClass.getSimpleName() + "_" + attribute);
 			String type = getHibernateType(getDataType(dataObjectClass, attribute));
 			property.setAttribute("type", type);
 			entity.appendChild(property);

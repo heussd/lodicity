@@ -34,7 +34,7 @@ public class Filter {
 
 	public Filter eq(String field, Object value) {
 		if (Schema.isListType(dataObjectClass, field)) {
-			return new Filter(dataObjectClass, Restrictions.like("subject", "%\"" + value + "\"%"));
+			return new Filter(dataObjectClass, Restrictions.like(field, "%\"" + value + "\"%"));
 		} else {
 			return new Filter(dataObjectClass, Restrictions.eq(field, value));
 		}

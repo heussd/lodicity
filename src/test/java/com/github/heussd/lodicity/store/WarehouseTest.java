@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.heussd.lodicity.data.MetaData;
@@ -211,31 +209,141 @@ public class WarehouseTest {
 
 	@Test(expected = AssertionError.class)
 	public void testEmptyQuery() {
-		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
 
-		warehouse.query();
-		warehouse.close();
+			warehouse.query();
+		} finally {
+			warehouse.close();
+		}
 	}
-	
+
 	@Test(expected = AssertionError.class)
 	public void testEmptyCount() {
-		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
 
-		warehouse.count();
-		warehouse.close();
+			warehouse.count();
+			warehouse.close();
+		} finally {
+			warehouse.close();
+		}
 	}
-	
+
 	@Test(expected = AssertionError.class)
 	public void testInvalidMassUpdate1() {
-		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
+			warehouse.massUpdate(makeCompanionDataObject());
+		} finally {
+			warehouse.close();
+		}
 
-		warehouse.massUpdate(makeCompanionDataObject());
+	}
+
+	@Test(expected = AssertionError.class)
+	public void testInvalidMassUpdate2() {
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
+			warehouse.massUpdate(null);
+		} finally {
+			warehouse.close();
+		}
+	}
+
+	@Test(expected = AssertionError.class)
+	public void testInvalidPersist() {
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
+
+			warehouse.persist(new ArrayList<>());
+		} finally {
+			warehouse.close();
+		}
+	}
+
+	@Test
+	public void testLike() {
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
+
+			DataObject dataObject = makeCompanionDataObject();
+
+			warehouse.persist(dataObject);
+			Filter filter = new Filter(DataObject.class);
+			Long count = warehouse.count(filter.like("string", "string"));
+			assertEquals(new Long(1), count);
+		} finally {
+			warehouse.close();
+		}
+	}
+
+	@Test(expected = AssertionError.class)
+	public void testNullCount() {
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
+
+			Filter[] filters = new Filter[] {};
+			warehouse.count(filters);
+		} finally {
+			warehouse.close();
+		}
 	}
 	
 	@Test(expected = AssertionError.class)
-	public void testInvalidMassUpdate2() {
-		Warehouse warehouse = new Warehouse(true, DataObject.class);
+	public void testNullUpdate() {
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
 
-		warehouse.massUpdate(null);
+			warehouse.update(null);
+		} finally {
+			warehouse.close();
+		}
+	}
+	
+	@Test(expected = AssertionError.class)
+	public void testNullListPersist() {
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
+
+			warehouse.persist(new ArrayList<>());
+		} finally {
+			warehouse.close();
+		}
+	}
+
+
+	@Test
+	public void testListEq() {
+		Warehouse warehouse = null;
+		try {
+			warehouse = new Warehouse(true, DataObject.class);
+
+			DataObject dataObject = makeCompanionDataObject();
+
+			warehouse.persist(dataObject);
+			Filter filter = new Filter(DataObject.class);
+			Long count = warehouse.count(filter.eq("stringList", "Hello"));
+			assertEquals(new Long(1), count);
+		} finally {
+			warehouse.close();
+		}
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testInvalidType() {
+		class UnknownType extends DataObject {
+		}
+
+		new Warehouse(UnknownType.class);
 	}
 }
