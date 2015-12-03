@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -31,7 +30,6 @@ public class Warehouse implements Closeable {
 	private SessionFactory factory;
 	private Session session;
 	private Transaction transaction;
-	private Query query;
 
 	public Warehouse() {
 		this(false, DataObject.class);
@@ -70,26 +68,8 @@ public class Warehouse implements Closeable {
 				configuration.addInputStream(IOUtils.toInputStream(Schema.generateHibernateMapping(dataObjectClass), "UTF-8"));
 			}
 
-			// <property name="hibernate.search.model_mapping">
-			// com.packtpub.hibernatesearch.util.SearchMappingFactory
-			// </property>
-			// LOGGER.info("Registering {}", DataObjectSearchMappingFactory.class.getCanonicalName());
-			// configuration.setProperty(org.hibernate.search.cfg.Environment.MODEL_MAPPING, DataObjectSearchMappingFactory.class.getCanonicalName());
-
 			factory = configuration.buildSessionFactory();
 			session = factory.openSession();
-
-			Transaction transaction = session.beginTransaction();
-			session.createSQLQuery("PRAGMA journal_mode=WAL");
-
-			// this.query = session.createQuery("FROM DataObject dataObject WHERE dataObject.string = :string");
-			transaction.commit();
-
-			// FullTextSession fullTextSession = Search.getFullTextSession(session);
-			// System.out.println(fullTextSession.getSearchFactory().getIndexedTypes().size());
-			// for (Class c : fullTextSession.getSearchFactory().getIndexedTypes()) {
-			// System.out.println(c);
-			// }
 
 		} catch (Throwable e) {
 			throw new RuntimeException("Failed to create Warehouse", e);
@@ -121,14 +101,6 @@ public class Warehouse implements Closeable {
 		assert dataObjects.size() != 0 : "No DataObject(s) given";
 		LOGGER.info("Persisting {} items...", dataObjects.size());
 
-		// session.get(DataObject.class, );
-		// // has?
-		// {long start = System.nanoTime();
-		// count(DataObject.class, Restrictions.eq("string", dataObjects.get(0).<String>get("string")));
-		// long end = System.nanoTime();
-		// System.out.println("Counting took " + (end-start));
-		// }
-
 		long start = System.nanoTime();
 		Transaction transaction = session.beginTransaction();
 		for (DataObject dataObject : dataObjects) {
@@ -149,12 +121,8 @@ public class Warehouse implements Closeable {
 		transaction.commit();
 	}
 
-	public Iterable<? extends DataObject> query(Class<? extends DataObject> dataObjectClass) {
-		return query(new Filter(dataObjectClass));
-	}
-
 	public Iterable<? extends DataObject> query(Filter... filters) {
-		assert filters.length > 0 : "At least one filter is required";
+		assert filters.length != 0 : "At least one filter is required";
 		Criteria criteria = criteriaFromFilters(filters);
 
 		LOGGER.debug("Firing query with critera {}", criteria.toString());

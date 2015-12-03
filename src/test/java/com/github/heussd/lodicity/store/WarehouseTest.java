@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.github.heussd.lodicity.data.MetaData;
 import com.github.heussd.lodicity.model.DataObject;
 
 public class WarehouseTest {
@@ -183,4 +184,58 @@ public class WarehouseTest {
 		warehouse.close();
 	}
 
+	@Test
+	public void testMetadata() {
+		MetaData metaData = new MetaData("test");
+		Warehouse warehouse = new Warehouse();
+		warehouse.persistMetaData(metaData);
+		warehouse.close();
+	}
+
+	@Test
+	public void testTransaction() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+		warehouse.openTransaction();
+
+		for (int i = 0; i < 10; i++) {
+			DataObject dataObject = new DataObject();
+			dataObject.set("string", "TEST");
+			warehouse.massUpdate(dataObject);
+		}
+
+		warehouse.commit();
+
+		assertEquals(new Long(10), warehouse.count(DataObject.class));
+		warehouse.close();
+	}
+
+	@Test(expected = AssertionError.class)
+	public void testEmptyQuery() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+
+		warehouse.query();
+		warehouse.close();
+	}
+	
+	@Test(expected = AssertionError.class)
+	public void testEmptyCount() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+
+		warehouse.count();
+		warehouse.close();
+	}
+	
+	@Test(expected = AssertionError.class)
+	public void testInvalidMassUpdate1() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+
+		warehouse.massUpdate(makeCompanionDataObject());
+	}
+	
+	@Test(expected = AssertionError.class)
+	public void testInvalidMassUpdate2() {
+		Warehouse warehouse = new Warehouse(true, DataObject.class);
+
+		warehouse.massUpdate(null);
+	}
 }

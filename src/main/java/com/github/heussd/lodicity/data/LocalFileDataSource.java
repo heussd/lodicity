@@ -1,6 +1,8 @@
 package com.github.heussd.lodicity.data;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,13 @@ public class LocalFileDataSource extends DataSource {
 
 	public LocalFileDataSource(String localFilePath) {
 		this.file = new File(localFilePath);
+
+		if (!file.exists())
+			throw new RuntimeException("File does not exist \"" + file + "\"");
+	}
+
+	public LocalFileDataSource(URL resource) throws URISyntaxException {
+		this.file = new File(resource.toURI());
 
 		if (!file.exists())
 			throw new RuntimeException("File does not exist \"" + file + "\"");

@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.print.attribute.standard.MediaSize.Other;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,8 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.github.heussd.lodicity.store.Warehouse;
-
 /**
  * Offers a number of convenience methods to access the Schema for {@link DataObject} or to validate {@link DataObject} instances.
  * 
@@ -52,7 +49,7 @@ public class Schema {
 
 	static {
 		try {
-			INSTANCE = new Schema(new File(Schema.class.getResource("/" + SCHEMA_NAME).getFile()));
+			INSTANCE = new Schema(new File(Schema.class.getResource("/" + SCHEMA_NAME).toURI()));
 		} catch (Exception e) {
 			throw new RuntimeException("Cannot load Schema", e);
 		}
@@ -467,7 +464,7 @@ public class Schema {
 			Element property = doc.createElement("property");
 			property.setAttribute("name", attribute);
 			property.setAttribute("column", attribute);
-			property.setAttribute("index", "IDX_" + dataObjectClass.getSimpleName().toUpperCase() + "_SHARED, IDX_" + dataObjectClass.getSimpleName() + "_" + attribute);
+//			property.setAttribute("index", "IDX_" + dataObjectClass.getSimpleName().toUpperCase() + "_SHARED, IDX_" + dataObjectClass.getSimpleName() + "_" + attribute);
 			String type = getHibernateType(getDataType(dataObjectClass, attribute));
 			property.setAttribute("type", type);
 			entity.appendChild(property);

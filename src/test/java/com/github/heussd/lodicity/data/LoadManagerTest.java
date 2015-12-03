@@ -2,6 +2,7 @@ package com.github.heussd.lodicity.data;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.heussd.lodicity.model.DataObject;
@@ -34,7 +35,15 @@ public class LoadManagerTest {
 		}
 	}
 
-	DataSource fileDataSource = new PackagedResource("lodicity.schema.xlsx");
+	DataSource fileDataSource = null;
+
+	public LoadManagerTest() {
+		try {
+			fileDataSource = new PackagedResource("lodicity.schema.xlsx");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Test
 	public void testLoadScenario1() {

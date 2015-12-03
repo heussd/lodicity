@@ -57,9 +57,8 @@ public class Filter {
 		return this.dataObjectClass;
 	}
 
-	public Filter like(String string, String string2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Filter like(String field, String likeExpression) {
+		return new Filter(dataObjectClass, Restrictions.like(field, "%" + likeExpression + "%"));
 	}
 
 }

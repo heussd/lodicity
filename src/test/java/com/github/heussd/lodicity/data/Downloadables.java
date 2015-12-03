@@ -1,7 +1,8 @@
 package com.github.heussd.lodicity.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Downloadables {
@@ -18,7 +19,7 @@ public class Downloadables {
 
 	@Test
 	public void testCKAN() throws Exception {
-		CKANDataSource ckanDataSource = new CKANDataSource("http://datahub.io/dataset/new-zealand-environmental-indicators-community-and-economy-waikato");
+		CKANDataSource ckanDataSource = new CKANDataSource("https://datahub.io/dataset/mestske-obvody-v-brne");
 
 		System.out.println(ckanDataSource);
 

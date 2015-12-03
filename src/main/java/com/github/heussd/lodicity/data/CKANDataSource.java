@@ -27,11 +27,12 @@ public class CKANDataSource extends DownloadableDataSource {
 
 			// http://datahub.io/api/3/action/package_show?id=adur_district_spending
 			LOGGER.info("Constructing CKAN API Version 3 Query for \"{}\"", dataPortal);
-			URL ckanRequest = new URL("http://" + dataPortal + "/api/3/action/package_show?id=" + datasetId);
+			URL ckanRequest = new URL("https://" + dataPortal + "/api/3/action/package_show?id=" + datasetId);
 
 			LOGGER.info("Requesting CKAN meta data for \"{}\"", datasetId);
 			Scanner scanner = new Scanner(ckanRequest.openStream());
 			String response = scanner.useDelimiter("\\Z").next();
+
 			JSONObject json = new JSONObject(response);
 			scanner.close();
 			LOGGER.info("Parsing response...");

@@ -1,5 +1,6 @@
 package com.github.heussd.lodicity.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,7 +11,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class DataObject extends HashMap<String, Object> {
+public class DataObject extends HashMap<String, Object> implements Serializable {
 
 	public static final String HIBERNATE_INTERNAL_ID = "hibernateInternalId";
 

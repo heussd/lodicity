@@ -5,10 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.junit.Test;
 
 public class SchemaTest {
-	
+
 	private final static String COMPANION_STRING = "Hello this is a string with nasty characters äöü!";
 
 	private DataObject makeCompanionDataObject() {
@@ -23,7 +24,7 @@ public class SchemaTest {
 
 		return dataObject;
 	}
-	
+
 	@Test
 	public void testListValidation() {
 		DataObject dataObject = makeCompanionDataObject();
@@ -35,15 +36,17 @@ public class SchemaTest {
 		DataObject dataObject = new DataObject();
 		assertEquals("String", Schema.getDataType(dataObject, "string"));
 	}
-	
-	
+
 	@Test
 	public void testIsValid() {
 		DataObject dataObject = new DataObject();
 		dataObject.set("string", "hello world");
+		dataObject.set("url", "http://www.example.com");
+		dataObject.set("boolean", "true");
+		dataObject.set("integer", "3");
 		assertEquals(true, dataObject.isValid("string", "hello world"));
 	}
-	
+
 	@Test
 	public void testSimpleType() {
 		class SimpleType extends DataObject {
@@ -52,27 +55,39 @@ public class SchemaTest {
 		SimpleType simpleType = new SimpleType();
 		assertEquals(true, simpleType.isValid("string", "hello world"));
 	}
-	
-	
+
 	@Test
 	public void testPutMultiple() {
 		DataObject dataObject = makeCompanionDataObject();
-		
-		ArrayList<String> list = dataObject.<ArrayList<String>>get("stringList");
+
+		ArrayList<String> list = dataObject.<ArrayList<String>> get("stringList");
 		assertEquals("Hello", list.get(0));
 		assertEquals("World", list.get(1));
-		
+
 		dataObject.put("stringList", "from Java");
-		
-		list = dataObject.<ArrayList<String>>get("stringList");
+
+		list = dataObject.<ArrayList<String>> get("stringList");
 		assertEquals("Hello", list.get(0));
 		assertEquals("World", list.get(1));
 		assertEquals("from Java", list.get(2));
 	}
-	
-	
+
 	@Test
-	public void testEmbeddedSimpleType() {
-		
+	public void testEmbeddedList() {
+
+		DataObject dataObject = makeCompanionDataObject();
+		JSONArray jsonArray = new JSONArray();
+		jsonArray.put("eins");
+		jsonArray.put("zwei");
+		dataObject.set("stringList", jsonArray.toString());
+
+		dataObject.get("stringList", 1);
+	}
+
+	@Test
+	public void testAttributeAccess() {
+		for (String attribute : Schema.getAttributes(new DataObject())) {
+			System.out.println(attribute + " is " + (Schema.isTrivialType(attribute) ? "trivial" : "non-trivial"));
+		}
 	}
 }
